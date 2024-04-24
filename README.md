@@ -58,11 +58,13 @@ Private Sub CommandNo_Click()
     '清空日志变量
     buttonClickLog = ""
     '样式设置
-    CommandNo.BackColor = RGB(255, 128, 102) ' 设置按钮为红色背景
+    CommandNo.BackColor = RGB(230, 33, 0) ' 设置按钮为红色背景
     CommandNo.Enabled = False ' 禁用按钮
     Timer2.Interval = 10000 ' 设置计时器间隔为10秒
     Timer2.Enabled = True ' 启动计时器
 End Sub
+
+
 
 Private Sub Timer1_Timer()
     CommandOK.BackColor = vbButtonFace ' 恢复按钮初始背景
@@ -86,14 +88,14 @@ Private Sub Label2_MouseDown(Button As Integer, Shift As Integer, X As Single, Y
 End Sub
 
 Private Sub WriteToLogFile(ByVal logData As String)
-    Dim filePath As String
-    filePath = App.Path & "\" & LogFileName
+    Dim FilePath As String
+    FilePath = App.Path & "\" & LogFileName
     Dim fileNum As Integer
     fileNum = FreeFile
-    If Dir(filePath) = "" Then
-        Open filePath For Output As fileNum
+    If Dir(FilePath) = "" Then
+        Open FilePath For Output As fileNum
     Else
-        Open filePath For Append As fileNum
+        Open FilePath For Append As fileNum
     End If
     If Right(logData, Len(vbCrLf)) <> vbCrLf Then
         logData = logData & vbCrLf
@@ -101,6 +103,39 @@ Private Sub WriteToLogFile(ByVal logData As String)
     Print #fileNum, logData
     Close fileNum
 End Sub
+
+Private Sub CommandRecord_Click()
+    ' 检查文本框是否隐藏，如果是，则显示出来
+    If Text1.Visible = False Then
+        Text1.Visible = True
+    Else
+        SaveAndHideText
+    End If
+End Sub
+
+Private Sub Text1_KeyPress(KeyAscii As Integer)
+    ' 检查用户是否按下 Enter 键
+    If KeyAscii = 13 Then
+        SaveAndHideText
+    End If
+End Sub
+
+Private Sub SaveAndHideText()
+    ' 检查文本框是否为空
+    If Text1.Text <> "" Then
+        Dim FilePath As String
+        Dim FreeFileNum As Integer
+        FilePath = App.Path & "\IdeaRecord.txt"
+        FreeFileNum = FreeFile
+        Open FilePath For Append As FreeFileNum
+        Print #FreeFileNum, Text1.Text
+        Close FreeFileNum
+        Text1.Text = ""
+    End If
+    Text1.Visible = False
+End Sub
+
+
 
 
 ```
