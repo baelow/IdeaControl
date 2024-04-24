@@ -29,9 +29,7 @@ Private Sub Form_Load()
     buttonClickLog = ""
     Dim style As Long
     style = GetWindowLong(Me.hwnd, GWL_STYLE)
-    ' 隐藏最大化按钮
     style = style And Not WS_MAXIMIZEBOX
-    ' 设置窗体样式
     SetWindowLong Me.hwnd, GWL_STYLE, style
 
 End Sub
@@ -40,23 +38,27 @@ Private Sub CommandOK_Click()
     'log记录
     Dim currentTime As String
     currentTime = Format(Now, "yyyy-mm-dd hh:mm:ss")
-    buttonClickLog = buttonClickLog & "[" & currentTime & "]" & " Can solve"
+    buttonClickLog = buttonClickLog & "[" & currentTime & "]" & " Can solve"  '& vbCrLf
     WriteToLogFile buttonClickLog
+    buttonClickLog = ""
     '格式设置
-    CommandOK.BackColor = RGB(0, 255, 0) ' 设置按钮为绿色背景
+    CommandOK.BackColor = RGB(0, 201, 167) ' 设置按钮为绿色背景
     CommandOK.Enabled = False ' 禁用按钮
     Timer1.Interval = 30000 ' 设置计时器间隔为30秒
     Timer1.Enabled = True ' 启动计时器
 End Sub
 
+
 Private Sub CommandNo_Click()
     'log设置
     Dim currentTime As String
     currentTime = Format(Now, "yyyy-mm-dd hh:mm:ss")
-    buttonClickLog = buttonClickLog & "[" & currentTime & "]" & " Can't solve"
+    buttonClickLog = buttonClickLog & "[" & currentTime & "]" & " Can't solve" '& vbCrLf
     WriteToLogFile buttonClickLog
+    '清空日志变量
+    buttonClickLog = ""
     '样式设置
-    CommandNo.BackColor = RGB(255, 0, 0) ' 设置按钮为红色背景
+    CommandNo.BackColor = RGB(255, 128, 102) ' 设置按钮为红色背景
     CommandNo.Enabled = False ' 禁用按钮
     Timer2.Interval = 10000 ' 设置计时器间隔为10秒
     Timer2.Enabled = True ' 启动计时器
@@ -74,6 +76,8 @@ Private Sub Timer2_Timer()
     Timer2.Enabled = False ' 关闭计时器
 End Sub
 
+
+
 Private Sub Label2_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Button = vbLeftButton Then
         ReleaseCapture
@@ -86,8 +90,17 @@ Private Sub WriteToLogFile(ByVal logData As String)
     filePath = App.Path & "\" & LogFileName
     Dim fileNum As Integer
     fileNum = FreeFile
-    Open filePath For Append As fileNum
+    If Dir(filePath) = "" Then
+        Open filePath For Output As fileNum
+    Else
+        Open filePath For Append As fileNum
+    End If
+    If Right(logData, Len(vbCrLf)) <> vbCrLf Then
+        logData = logData & vbCrLf
+    End If
     Print #fileNum, logData
     Close fileNum
 End Sub
+
+
 ```
